@@ -1,4 +1,6 @@
-# Paradise Nursery
+# e-plantShopping
+
+Paradise Nursery — e-plantShopping project.
 
 A responsive houseplant shopping experience built with React, Vite, and Redux Toolkit. Browse plant collections, add favorites to your cart, adjust quantities, and review your order total.
 

@@ -6,45 +6,33 @@ const cartSlice = createSlice({
     items: [],
   },
   reducers: {
-    addToCart(state, action) {
-      const product = action.payload
-      const existingItem = state.items.find((item) => item.id === product.id)
+    addItem(state, action) {
+      const { name, image, cost } = action.payload
+      const existingItem = state.items.find((item) => item.name === name)
 
-      if (!existingItem) {
-        state.items.push({ ...product, quantity: 1 })
-      }
-    },
-    increaseQuantity(state, action) {
-      const item = state.items.find((entry) => entry.id === action.payload)
-      if (item) item.quantity += 1
-    },
-    decreaseQuantity(state, action) {
-      const item = state.items.find((entry) => entry.id === action.payload)
-      if (!item) return
-
-      if (item.quantity <= 1) {
-        state.items = state.items.filter((entry) => entry.id !== action.payload)
+      if (existingItem) {
+        existingItem.quantity += 1
       } else {
-        item.quantity -= 1
+        state.items.push({ name, image, cost, quantity: 1 })
       }
     },
-    removeFromCart(state, action) {
-      state.items = state.items.filter((item) => item.id !== action.payload)
+    removeItem(state, action) {
+      state.items = state.items.filter((item) => item.name !== action.payload)
+    },
+    updateQuantity(state, action) {
+      const { name, quantity } = action.payload
+      const item = state.items.find((entry) => entry.name === name)
+      if (item) item.quantity = quantity
     },
   },
 })
 
-export const {
-  addToCart,
-  increaseQuantity,
-  decreaseQuantity,
-  removeFromCart,
-} = cartSlice.actions
+export const { addItem, removeItem, updateQuantity } = cartSlice.actions
 
 export const selectCartItems = (state) => state.cart.items
 export const selectCartCount = (state) =>
   state.cart.items.reduce((total, item) => total + item.quantity, 0)
 export const selectCartTotal = (state) =>
-  state.cart.items.reduce((total, item) => total + item.price * item.quantity, 0)
+  state.cart.items.reduce((total, item) => total + item.cost * item.quantity, 0)
 
 export default cartSlice.reducer

@@ -551,6 +551,12 @@
 
 .continue-link {
   display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
   margin-top: 18px;
   color: #747b70;
   font-size: 11px;
@@ -677,4 +683,8 @@
   .quantity-control button {
     width: 25px;
   }
+}
+
+.about-us-container {
+  margin-top: 34px;
 }

@@ -1,11 +1,11 @@
 import { useDispatch, useSelector } from 'react-redux'
+import { Navbar } from './ProductList.jsx'
 import {
-  decreaseQuantity,
-  increaseQuantity,
-  removeFromCart,
+  removeItem,
   selectCartCount,
   selectCartItems,
   selectCartTotal,
+  updateQuantity,
 } from './CartSlice.jsx'
 
 function CartItem() {
@@ -14,8 +14,39 @@ function CartItem() {
   const count = useSelector(selectCartCount)
   const total = useSelector(selectCartTotal)
 
+  const calculateTotalAmount = () => total.toFixed(2)
+  const calculateTotalCost = (item) => (item.cost * item.quantity).toFixed(2)
+
+  const handleContinueShopping = (e) => {
+    e.preventDefault()
+    window.location.hash = '#/plants'
+  }
+
+  const handleCheckoutShopping = (e) => {
+    e.preventDefault()
+    window.alert('Coming Soon')
+  }
+
+  const handleIncrement = (item) => {
+    dispatch(updateQuantity({ name: item.name, quantity: item.quantity + 1 }))
+  }
+
+  const handleDecrement = (item) => {
+    if (item.quantity > 1) {
+      dispatch(updateQuantity({ name: item.name, quantity: item.quantity - 1 }))
+    } else {
+      dispatch(removeItem(item.name))
+    }
+  }
+
+  const handleRemove = (item) => {
+    dispatch(removeItem(item.name))
+  }
+
   return (
-    <main className="page-shell cart-page">
+    <>
+    <Navbar />
+    <main className="page-shell cart-page cart-container">
       <section className="cart-heading">
         <div>
           <p className="eyebrow">YOUR LITTLE PARADISE</p>
@@ -29,13 +60,15 @@ function CartItem() {
           <span className="empty-cart-icon" aria-hidden="true">✳</span>
           <h2>Your cart is ready to grow.</h2>
           <p>Pick a plant (or a few) and we’ll keep them right here.</p>
-          <a className="button button-dark" href="#/plants">Browse plants <span aria-hidden="true">→</span></a>
+          <button className="button button-dark get-started-button" type="button" onClick={handleContinueShopping}>
+            Browse plants <span aria-hidden="true">→</span>
+          </button>
         </section>
       ) : (
         <div className="cart-layout">
           <section className="cart-items" aria-label="Items in your cart">
             {items.map((item) => (
-              <article className="cart-item" key={item.id}>
+              <article className="cart-item" key={item.name}>
                 <img
                   className="cart-item-image"
                   src={`https://images.unsplash.com/${item.image}?auto=format&fit=crop&w=360&q=80`}
@@ -44,11 +77,11 @@ function CartItem() {
                 <div className="cart-item-info">
                   <p className="eyebrow">PARADISE NURSERY</p>
                   <h2>{item.name}</h2>
-                  <p className="unit-price">${item.price.toFixed(2)} <span>each</span></p>
+                  <p className="unit-price">${item.cost.toFixed(2)} <span>each</span></p>
                   <button
-                    className="remove-button"
+                    className="remove-button cart-item-delete"
                     type="button"
-                    onClick={() => dispatch(removeFromCart(item.id))}
+                    onClick={() => handleRemove(item)}
                     aria-label={`Remove ${item.name} from cart`}
                   >
                     Remove
@@ -58,7 +91,7 @@ function CartItem() {
                   <div className="quantity-control" aria-label={`Quantity for ${item.name}`}>
                     <button
                       type="button"
-                      onClick={() => dispatch(decreaseQuantity(item.id))}
+                      onClick={() => handleDecrement(item)}
                       aria-label={`Decrease ${item.name} quantity`}
                     >
                       −
@@ -66,13 +99,13 @@ function CartItem() {
                     <span aria-live="polite">{item.quantity}</span>
                     <button
                       type="button"
-                      onClick={() => dispatch(increaseQuantity(item.id))}
+                      onClick={() => handleIncrement(item)}
                       aria-label={`Increase ${item.name} quantity`}
                     >
                       +
                     </button>
                   </div>
-                  <p className="line-total">${(item.price * item.quantity).toFixed(2)}</p>
+                  <p className="line-total">${calculateTotalCost(item)}</p>
                 </div>
               </article>
             ))}
@@ -82,7 +115,7 @@ function CartItem() {
             <h2>Order summary</h2>
             <div className="summary-row">
               <span>Plants ({count})</span>
-              <span>${total.toFixed(2)}</span>
+              <span>${calculateTotalAmount()}</span>
             </div>
             <div className="summary-row">
               <span>Delivery</span>
@@ -90,20 +123,23 @@ function CartItem() {
             </div>
             <div className="summary-total">
               <span>Total</span>
-              <strong>${total.toFixed(2)}</strong>
+              <strong>${calculateTotalAmount()}</strong>
             </div>
             <button
               className="button button-dark checkout-button"
               type="button"
-              onClick={() => window.alert('Coming soon! Your plants are looking forward to meeting you.')}
+              onClick={handleCheckoutShopping}
             >
               Continue to checkout <span aria-hidden="true">→</span>
             </button>
-            <a className="continue-link" href="#/plants">← Continue shopping</a>
+            <button className="continue-link get-started-button" type="button" onClick={handleContinueShopping}>
+              ← Continue Shopping
+            </button>
           </aside>
         </div>
       )}
     </main>
+    </>
   )
 }
 
